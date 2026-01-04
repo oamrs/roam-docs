@@ -1,0 +1,8 @@
+[book]
+title = "ROAM Framework Documentation"
+authors = ["ROAM Team"]
+language = "en"
+src = "src"
+
+[output.html]
+mathjax-support = true
