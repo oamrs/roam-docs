@@ -5,6 +5,7 @@
 # Architecture
 
 - [Overview](./architecture/overview.md)
+- [Identity & RBAC](./architecture/identity.md)
 
 # Contributing
 
