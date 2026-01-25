@@ -18,10 +18,25 @@ install:
 	@mdbook-mermaid install .
 	@echo "mdbook tooling is ready"
 
-serve: install
+gen-api-docs:
+	@echo "Generating Rust API Docs (Workspace)..."
+	@cd ../.. && cargo doc --workspace --no-deps
+	@echo "Generating Rust API Docs (Public SDK)..."
+	@cd ../../libraries/roam-public && cargo doc --no-deps
+	
+	@# Copy generated docs to src directory
+	@mkdir -p src/api/rust
+	@# Workspace docs (Backend, Procedures)
+	@cp -r ../../target/doc/* src/api/rust/
+	@# SDK docs (OAM crate)
+	@cp -r ../../libraries/roam-public/target/doc/* src/api/rust/
+	
+	@echo "Rust API Docs staged in src/api/rust/"
+
+serve: install gen-api-docs
 	mdbook serve --open
 
-build: install
+build: install gen-api-docs
 	mdbook build
 
 clean:

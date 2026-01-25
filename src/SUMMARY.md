@@ -11,6 +11,7 @@
 # Contributing
 
 - [Workflow](./contributing/workflow.md)
+- [API Reference](./api-reference.md)
 
 # SDK Guides
 

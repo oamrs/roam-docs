@@ -2,6 +2,7 @@
 /book/
 mermaid.min.js
 mermaid-init.js
+src/api/rust/
 
 # IDE
 .vscode/
