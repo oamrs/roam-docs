@@ -1,0 +1,101 @@
+/* Roam Documentation Theme - Matched to Frontend App */
+:root {
+    /* Light Theme Palette (from app.css) */
+    --roam-bg-body-light: #ffffff;
+    --roam-bg-subtle-light: #f6f8fa;
+    --roam-bg-sidebar-light: #f6f8fa;
+    --roam-bg-card-light: #ffffff;
+    --roam-text-primary-light: #24292e;
+    --roam-text-secondary-light: #586069;
+    --roam-border-color-light: #e1e4e8;
+    --roam-accent-color-light: #0366d6;
+    --roam-accent-hover-light: #005cc5;
+    
+    /* Dark Theme Palette (from app.css) */
+    --roam-bg-body-dark: #0d1117;
+    --roam-bg-subtle-dark: #161b22;
+    --roam-bg-sidebar-dark: #0d1117;
+    --roam-bg-card-dark: #161b22;
+    --roam-text-primary-dark: #c9d1d9;
+    --roam-text-secondary-dark: #8b949e;
+    --roam-border-color-dark: #30363d;
+    --roam-accent-color-dark: #1f6feb;
+    --roam-accent-hover-dark: #388bfd;
+
+    /* Global Settings */
+    --sidebar-width: 300px;
+}
+
+/* Light Themes (Light, Rust) */
+.light, .rust {
+    --bg: var(--roam-bg-body-light);
+    --fg: var(--roam-text-primary-light);
+    --sidebar-bg: var(--roam-bg-sidebar-light);
+    --sidebar-fg: var(--roam-text-secondary-light);
+    --sidebar-active: var(--roam-accent-color-light);
+    --sidebar-spacer: var(--roam-border-color-light);
+    
+    --scrollbar: var(--roam-border-color-light);
+    
+    --icons: var(--roam-text-secondary-light);
+    --icons-hover: var(--roam-text-primary-light);
+    
+    --links: var(--roam-accent-color-light);
+    
+    --quote-bg: var(--roam-bg-subtle-light);
+    --table-header-bg: var(--roam-bg-subtle-light);
+    --table-border-color: var(--roam-border-color-light);
+    
+    --inline-code-color: var(--roam-text-primary-light);
+    --inline-code-bg: rgba(27, 31, 35, 0.05);
+}
+
+/* Dark Themes (Coal, Navy, Ayu) */
+.coal, .navy, .ayu {
+    --bg: var(--roam-bg-body-dark);
+    --fg: var(--roam-text-primary-dark);
+    --sidebar-bg: var(--roam-bg-sidebar-dark);
+    --sidebar-fg: var(--roam-text-secondary-dark);
+    --sidebar-active: var(--roam-accent-color-dark);
+    --sidebar-spacer: var(--roam-border-color-dark);
+    
+    --scrollbar: var(--roam-border-color-dark);
+    
+    --icons: var(--roam-text-secondary-dark);
+    --icons-hover: var(--roam-text-primary-dark);
+    
+    --links: var(--roam-accent-color-dark);
+    
+    --quote-bg: var(--roam-bg-subtle-dark);
+    --table-header-bg: var(--roam-bg-subtle-dark);
+    --table-border-color: var(--roam-border-color-dark);
+    
+    --inline-code-color: var(--roam-text-primary-dark);
+    --inline-code-bg: rgba(240, 246, 252, 0.15);
+}
+
+/* Shared Typography */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+/* Component Overrides */
+.sidebar {
+    border-right: 1px solid var(--sidebar-spacer);
+}
+
+.searchbar {
+    background-color: var(--sidebar-bg);
+}
+
+#searchresults a {
+    color: var(--fg);
+}
+
+/* Mermaid Integration */
+.mermaid {
+    background-color: transparent !important;
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+}

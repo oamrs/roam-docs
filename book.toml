@@ -4,5 +4,18 @@ authors = ["ROAM Team"]
 language = "en"
 src = "src"
 
+[build]
+build-dir = "book"
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
 [output.html]
 mathjax-support = true
+# default-theme = "roam" 
+# preferred-dark-theme = "navy"
+additional-css = ["roam.css"]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
+
+[output.html.search]
+enable = true

@@ -100,3 +100,25 @@ ROAM follows a **distributed public/private model** with a clear separation betw
 **External contributors cannot:**
 - Modify exported Rust core (roam-public code)
 - They must file issues/PRs in roam-public for core changes
+
+## Operational Modes
+
+ROAM supports two distinct operational modes depending on how the Agent interacts with the host environment.
+
+### 1. Active Mode (User-Driven Interception)
+
+The End User via the UI initiates the interaction. The OAM middleware intercepts the incoming request. This interception only occurs if the **BYOI layer** determines that an Agent is authorized to act on behalf of that user's roles.
+
+*   **Role**: Agent acts as a Shadow/Monitor.
+*   **Typical Context**: API Integration, Managed Proxy.
+*   **Flow**: `User UI -> OAM Middleware -> [Async Event to Agent] -> Application/DB`.
+*   **Trigger**: User performs an action. The request is allowed to continue without modification (asynchronously monitored), or blocked only if it violates safety policy.
+
+### 2. Passive Mode (Agent as Observer)
+
+The Agent reacts to existing system events or data streams. It sits on a message bus (like Kafka) or gRPC interceptor chain. When an event occurs, the **BYOI layer** determines if an Agent is authorized to act on the request. If unauthorized, the event continues to the handler untouched. If authorized, the Agent assists by inspecting intent or enforcing policy.
+
+*   **Role**: Agent acts as an Assistant.
+*   **Typical Context**: Kafka Streams, Desktop UI Events, Message Buses.
+*   **Flow**: `Event Source -> BYOI Check -> [Optional Agent Assistant] -> Business Logic`.
+*   **Trigger**: External event (e.g., "DraftCreated", "UserLogin") triggers the inspection pipeline.

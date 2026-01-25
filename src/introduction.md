@@ -8,6 +8,13 @@ ROAM is a distributed, modular system for semantic object mapping and agent coor
 - **Contributing** - Workflow for contributing to roam-public, PR process, and community guidelines
 - **SDK Guides** - Language-specific bindings for Python and .NET
 
+## Core Operational Modes
+
+ROAM integrates into your infrastructure in two distinct ways:
+
+*   **Active Mode (User-Driven)**: The End User initiates actions via your UI/API. OAM intercepts these requests to validate identity and policy, asynchronously notifying the Agent (Shadow Mode).
+*   **Passive Mode (Assistant)**: The Agent observes existing event streams (Kafka, gRPC). If authorized by BYOI, it assists or validates the flow without blocking normal operations.
+
 ## Quick Links
 
 - **roam-public** - [Community contributions](https://github.com/oamrs/roam-public)
