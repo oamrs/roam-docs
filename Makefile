@@ -42,6 +42,9 @@ gen-api-docs:
 serve: install gen-api-docs
 	mdbook serve --open
 
+serve-headless: install gen-api-docs
+	mdbook serve -n 0.0.0.0
+
 build: install gen-api-docs
 	mdbook build
 
