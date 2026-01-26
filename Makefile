@@ -31,6 +31,12 @@ gen-api-docs:
 	@# SDK docs (OAM crate)
 	@cp -r ../../libraries/roam-public/target/doc/* src/api/rust/
 	
+	@# Staging Python/DotNet Placeholders (Real generation requires pdoc/docfx)
+	@mkdir -p src/api/python
+	@echo "<html><body><h1>Python SDK Docs Coming Soon</h1></body></html>" > src/api/python/index.html
+	@mkdir -p src/api/dotnet
+	@echo "<html><body><h1>.NET SDK Docs Coming Soon</h1></body></html>" > src/api/dotnet/index.html
+	
 	@echo "Rust API Docs staged in src/api/rust/"
 
 serve: install gen-api-docs
