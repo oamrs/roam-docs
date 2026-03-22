@@ -2,39 +2,38 @@
 
 ## Overview
 
-ROAM uses a **public-first contribution model**. Community contributions target `roam-public` directly, which then flows through the private monorepo and exports to SDKs.
+ROAM uses the private monorepo as the review boundary for open-core changes. Public repositories are downstream publication targets for approved changes in the relevant subtree paths.
 
 ## High-Level Flow
 
+```text
+Contributor or Maintainer
+    ↓
+1. Create branch from roam/main
+2. Change code in private and/or public subtree paths
+3. Add or update tests first
+4. Open PR to roam/main
+    ↓
+GitHub Actions
+    ↓
+5. Run quality, coverage, docs, runtime, and security gates
+    ↓
+Maintainers
+    ↓
+6. Review architecture, complexity, and test quality
+7. Merge to roam/main
+    ↓
+GitHub Actions
+    ↓
+8. Re-run post-merge checks on main
+9. Push only changed public subtrees
 ```
-You (External Contributor)
-    ↓
-1. Fork roam-public
-2. Create feature branch (13-, 14-, 15-, etc.)
-3. Write code + tests
-4. Submit PR to roam-public/main
-    ↓
-ROAM Maintainers
-    ↓
-5. Review code
-6. Run CI (tests, linting, clippy)
-7. Approve & merge to roam-public/main
-    ↓
-8. (Maintainer) Pull into roam monorepo (branch 1-the-mirror)
-9. (Maintainer) Review integrated changes
-10. (Maintainer) Merge to roam/main
-    ↓
-GitHub Actions (Automated)
-    ↓
-11. Export roam-public/ → roam-python (PyPI)
-12. Export roam-public/ → roam-dotnet (NuGet)
-13. Sync version tags to all polyrepos
-    ↓
-Package Registries
-    ↓
-14. Python SDK: pip install roam-python
-15. .NET SDK: nuget install Roam.Dotnet
-```
+
+## Branch and PR Expectations
+
+- Keep library and service changes small enough to review for responsibility boundaries.
+- If a unit test requires several mocks or stubs, split the production code before adding more test scaffolding.
+- If a test is named `integration`, it must talk to a started runtime over the network. If it does not, name it differently.
 
 ## For External Contributors
 
@@ -62,24 +61,13 @@ git checkout -b 13-the-mirror
 
 ### Step 3: Make Changes
 
-Work on your feature in `roam-public/`:
+Guidelines:
 
-```
-roam-public/
-├── mirror/
-│   ├── src/
-│   │   ├── lib.rs
-│   │   └── reflection.rs
-│   ├── tests/
-│   ├── Cargo.toml
-│   └── README.md
-```
-
-**Guidelines:**
-- Write tests alongside your code (TDD)
-- Run `cargo test` locally
-- Run `cargo clippy` for linting
-- Follow Rust naming conventions
+- Write tests first.
+- Prefer Make targets over direct commands where available.
+- Keep unit tests in-process and deterministic.
+- Keep integration tests network-bound and runtime-backed.
+- Update docs when the workflow or contract changes.
 
 ### Step 4: Submit PR
 
@@ -114,12 +102,16 @@ Describe how you tested this
 
 ### Step 5: CI Checks
 
-When you open a PR, GitHub Actions runs:
-- `cargo test` — unit and integration tests
-- `cargo clippy` — linting
-- `cargo fmt --check` — formatting validation
+When you open a PR, GitHub Actions runs the current quality profile, including:
 
-**All checks must pass before merge.**
+- frontend lint and unit tests
+- Rust formatting and clippy checks
+- Rust coverage thresholds for key libraries and services
+- runtime-backed test suites
+- mdBook build
+- dependency audit
+
+All checks must pass before merge.
 
 ### Step 6: Code Review
 
@@ -131,62 +123,36 @@ A maintainer will:
 
 ### Step 7: Merge to Main
 
-Once approved, a maintainer merges to `roam-public/main`. Your changes are now in the public repo!
+Once approved, a maintainer merges to `roam/main`. If a public subtree path changed, the post-merge publish job pushes it after the gated checks pass.
 
-## For ROAM Maintainers
+## For Maintainers
 
-### Importing to Monorepo
+### Review Focus
 
-Once `roam-public/main` has your changes, import them:
+Before merging to `main`:
 
-```bash
-# In roam monorepo, on branch 1-the-mirror
-git subtree pull --prefix roam-public https://github.com/oamrs/roam-public.git main --squash
-```
-
-This creates a commit with the squashed history from roam-public/main.
-
-### Review in Monorepo
-
-Before merging to roam/main:
-1. Verify code integrates with roam-enterprise/
-2. Run full monorepo tests
-3. Check that no proprietary code leaked into roam-public/
-4. Approve changes
+1. Verify the code matches the declared test layer.
+2. Verify that mock-heavy tests are not hiding multi-responsibility code.
+3. Verify public subtrees do not contain private-service or credential material.
+4. Verify docs reflect any workflow or contract change.
 
 ### Merge to Main
 
 ```bash
 git checkout main
-git merge --no-ff 1-the-mirror
+git merge --no-ff <feature-branch>
 git push origin main
 ```
 
-This triggers the export workflow automatically.
-
-### Tagging for Release
-
-When you're ready to release:
-
-```bash
-git tag v0.1.0 -m "First public release: The Mirror"
-git push origin v0.1.0
-```
-
-The `sync-version-tags` job will:
-1. Push tag to roam-python
-2. Push tag to roam-dotnet
-3. (Optional) Trigger package builds on registries
+That push triggers the post-merge workflow, which publishes only changed public subtree paths.
 
 ## Common Workflows
 
 ### "I found a bug in roam-python"
 
-1. File an issue in roam-public: https://github.com/oamrs/roam-public/issues
-2. Include reproduction steps
-3. If it's Rust core code, we'll fix it in roam-public
-4. If it's Python binding, we'll fix it in roam-python
-5. Core fixes flow to roam-python on next export
+1. Determine whether the bug is in the Rust core or the Python layer.
+2. Fix it in the corresponding subtree path inside this monorepo.
+3. Let the post-merge publish job push the changed public subtree after review.
 
 ### "I want to add a Python helper function"
 
@@ -223,8 +189,4 @@ git push origin <branch> --force
 
 ### "How do I know my change was exported?"
 
-Watch for a workflow run after we merge to roam/main. Check:
-1. https://github.com/oamrs/roam-python/commits/main (new commit hash)
-2. https://github.com/oamrs/roam-dotnet/commits/main (new commit hash)
-
-Both should have your commit within 5 minutes.
+Watch the post-merge workflow on `main`. If one of the public subtree paths changed, the publish job pushes that subtree after the gated checks pass.

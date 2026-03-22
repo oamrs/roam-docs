@@ -1,32 +1,32 @@
-# README
+# ROAM Docs
 
-Documentation for the ROAM Framework.
+This directory contains the public mdBook documentation subtree for ROAM.
 
-## Building
+## Build
+
+Preferred commands:
 
 ```bash
-# Install mdBook
-cargo install mdbook
+make -C services/roam-docs build
+make -C services/roam-docs serve
+```
 
-# Serve locally
-mdbook serve
+If you need the raw tools directly:
 
-# Build static site
+```bash
+cargo install mdbook mdbook-mermaid
 mdbook build
 ```
 
-Output will be in `book/` directory.
+The static output is written to `book/`.
 
-## Contents
+## What This Book Covers
 
-- **architecture/** - System design and component overview
-- **contributing/** - How to contribute to roam-public and SDKs
-- **sdk/** - Language-specific SDK guides (Python, .NET)
-- **deployment/** - Hardware requirements and operational guides
+- Architecture and system boundaries
+- Contributor workflow
+- Test taxonomy and quality policy
+- SDK-facing guidance
 
-## Quick Links
+## Publication Model
 
-- **roam-public** - Community contributions: https://github.com/oamrs/roam-public
-- **roam-python** - Python SDK: https://github.com/oamrs/roam-python
-- **roam-dotnet** - .NET SDK: https://github.com/oamrs/roam-dotnet
-- **roam** - Private monorepo (team only): https://github.com/oamrs/roam
+`services/roam-docs` is a public subtree. It is pushed out from the monorepo only after changes merge to `main` and the post-merge gates pass.

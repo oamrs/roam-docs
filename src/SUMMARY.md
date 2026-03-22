@@ -11,6 +11,7 @@
 # Contributing
 
 - [Workflow](./contributing/workflow.md)
+- [Testing and Release Policy](./contributing/testing-and-release.md)
 - [API Reference](./api-reference.md)
 
 # SDK Guides
