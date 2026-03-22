@@ -25,8 +25,8 @@ Maintainers
     ↓
 GitHub Actions
     ↓
-8. Re-run post-merge checks on main
-9. Push only changed public subtrees
+8. Re-run validation checks on main
+9. Publish only from explicit release tags
 ```
 
 ## Branch and PR Expectations
@@ -130,6 +130,8 @@ When you open a PR, GitHub Actions runs the current quality profile, including:
 
 All checks must pass before merge.
 
+Release workflows are separate from CI. A merge to `main` validates the codebase, but public publication happens only from explicit release tags.
+
 ### Step 6: Code Review
 
 A maintainer will:
@@ -140,7 +142,22 @@ A maintainer will:
 
 ### Step 7: Merge to Main
 
-Once approved, a maintainer merges to `roam/main`. If a public subtree path changed, the post-merge publish job pushes it after the gated checks pass.
+Once approved, a maintainer merges to `roam/main`. That merge reruns validation on `main`, but does not publish public artifacts by itself.
+
+When a release is intended:
+
+1. Create a `public-v*` tag to publish public subtrees.
+2. Create an `sdk-python-v*` tag to publish the Python SDK to PyPI.
+3. Add language-specific SDK release workflows and tag patterns as additional SDKs are introduced.
+
+Recommended SDK tag taxonomy:
+
+- `sdk-python-v*`
+- `sdk-typescript-v*`
+- `sdk-rust-v*`
+- `sdk-go-v*`
+
+Use the general form `sdk-<language>-v*` for future SDK release workflows.
 
 ## For Maintainers
 
@@ -161,7 +178,7 @@ git merge --no-ff <feature-branch>
 git push origin main
 ```
 
-That push triggers the post-merge workflow, which publishes only changed public subtree paths.
+That push triggers validation only. Publication happens from release tags, not directly from the merge.
 
 ## Common Workflows
 
@@ -169,7 +186,7 @@ That push triggers the post-merge workflow, which publishes only changed public 
 
 1. Determine whether the bug is in the Rust core or the Python layer.
 2. Fix it in the corresponding subtree path inside this monorepo.
-3. Let the post-merge publish job push the changed public subtree after review.
+3. Release the updated SDK from the appropriate language-specific release workflow after review.
 
 ### "I want to add a Python helper function"
 
@@ -206,4 +223,4 @@ git push origin <branch> --force
 
 ### "How do I know my change was exported?"
 
-Watch the post-merge workflow on `main`. If one of the public subtree paths changed, the publish job pushes that subtree after the gated checks pass.
+Watch the release workflow triggered by your `public-v*` or `sdk-python-v*` tag. A merge to `main` alone is not a release.

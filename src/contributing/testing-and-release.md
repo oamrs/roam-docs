@@ -82,8 +82,19 @@ Public repos are not updated from an unmerged branch.
 The release path is:
 
 1. Merge reviewed code to `main`
-2. Re-run the gated workflow on `main`
-3. Detect which public subtree paths changed
-4. Push only those changed subtrees
+2. Re-run the gated validation workflow on `main`
+3. Create an explicit release tag when publication is intended
+4. Use `public-v*` tags for public subtree publication
+5. Use `sdk-python-v*` tags for the current Python package publication
+6. Add separate language-specific SDK release workflows and tag patterns for future SDKs
+
+Recommended SDK release tag taxonomy:
+
+- `sdk-python-v*`
+- `sdk-typescript-v*`
+- `sdk-rust-v*`
+- `sdk-go-v*`
+
+Use the general form `sdk-<language>-v*` when adding new SDK release workflows.
 
 This keeps the private monorepo as the enforcement point for quality, security, and release discipline.
