@@ -58,6 +58,23 @@ Complexity grades follow these bands:
 	- `C`: 11-20
 	- `D` and above fail the gate
 
+## Local Pre-Commit Gate
+
+This repository also ships a tracked Git pre-commit hook.
+
+Enable it locally with:
+
+```bash
+make hooks-install
+```
+
+The hook runs the same top-level local gates expected before opening a PR:
+
+1. `make quality-checks`
+2. `make test`
+
+This does not replace CI, but it catches failures before the commit is created.
+
 ## Merge and Public Publication
 
 Public repos are not updated from an unmerged branch.

@@ -35,6 +35,23 @@ GitHub Actions
 - If a unit test requires several mocks or stubs, split the production code before adding more test scaffolding.
 - If a test is named `integration`, it must talk to a started runtime over the network. If it does not, name it differently.
 
+## Local Git Hooks
+
+Enable the repo-managed hooks after cloning:
+
+```bash
+make hooks-install
+```
+
+This configures `core.hooksPath` to `.githooks` for the local clone.
+
+The tracked pre-commit hook runs:
+
+- `make quality-checks`
+- `make test`
+
+If either command fails, the commit is blocked before it is created.
+
 ## For External Contributors
 
 ### Step 1: Fork and Setup
