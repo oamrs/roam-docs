@@ -130,6 +130,8 @@ When you open a PR, GitHub Actions runs the current quality profile, including:
 
 All checks must pass before merge.
 
+SDK-specific maintainability gates are opt-in. A new SDK does not automatically get a language-specific complexity gate; only SDKs with substantial handwritten logic should add one.
+
 Release workflows are separate from CI. A merge to `main` validates the codebase, but public publication happens only from explicit release tags.
 
 ### Step 6: Code Review
@@ -146,9 +148,11 @@ Once approved, a maintainer merges to `roam/main`. That merge reruns validation 
 
 When a release is intended:
 
-1. Create a `public-v*` tag to publish public subtrees.
+1. Create a `public-v*` tag to publish public subtrees changed since the previous public release tag.
 2. Create an `sdk-python-v*` tag to publish the Python SDK to PyPI.
 3. Add language-specific SDK release workflows and tag patterns as additional SDKs are introduced.
+
+If you need to release only a chosen subset of public targets, use the manual dispatch input on the public release workflow and provide explicit subtree prefixes.
 
 Recommended SDK tag taxonomy:
 

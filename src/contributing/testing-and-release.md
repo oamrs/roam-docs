@@ -41,18 +41,24 @@ This repository does not yet have the non-production environment required to run
 Pull requests to `main` must pass:
 
 1. Frontend lint, unit tests, and production build
-2. Python radon complexity gate for the Python SDK
+2. Opt-in SDK maintainability gates only where an SDK has meaningful handwritten code worth enforcing
 3. Rust quality checks, including clippy cognitive complexity enforcement
 4. Rust coverage thresholds for key library and service paths
 5. Runtime-backed test suites
 6. mdBook build
 7. Dependency audit
 
-Complexity grades follow these bands:
+Current SDK maintainability gate:
+
+- Python SDK maintainability gate on handwritten modules only
+
+SDK-specific maintainability gates are not mandatory per language. Do not add one just because a new SDK exists. Generated bindings, transport stubs, and transpiled artifacts should use build, smoke, and compatibility checks instead of complexity enforcement.
+
+Maintainability thresholds currently follow these bands:
 
 - Frontend: ESLint `complexity` threshold `20`
 - Rust: clippy `cognitive_complexity` threshold `10`
-- Python radon grades:
+- Python SDK handwritten-module radon grades:
 	- `A`: 1-5
 	- `B`: 6-10
 	- `C`: 11-20
@@ -84,7 +90,7 @@ The release path is:
 1. Merge reviewed code to `main`
 2. Re-run the gated validation workflow on `main`
 3. Create an explicit release tag when publication is intended
-4. Use `public-v*` tags for public subtree publication
+4. Use `public-v*` tags for public subtree publication, with targets auto-detected since the previous public release tag
 5. Use `sdk-python-v*` tags for the current Python package publication
 6. Add separate language-specific SDK release workflows and tag patterns for future SDKs
 
@@ -96,5 +102,7 @@ Recommended SDK release tag taxonomy:
 - `sdk-go-v*`
 
 Use the general form `sdk-<language>-v*` when adding new SDK release workflows.
+
+The public subtree release workflow also supports manual dispatch with explicit subtree prefixes when a release should target only a selected subset.
 
 This keeps the private monorepo as the enforcement point for quality, security, and release discipline.
