@@ -42,6 +42,15 @@ The comprehensive API reference for the ROAM framework.
     </p>
 </div>
 
+<div style="margin: 1rem 0; padding: 1rem; background-color: var(--quote-bg); border-left: 4px solid var(--sidebar-fg);">
+    <a href="api/rust/roam_managed_grpc/index.html" style="font-weight: bold; font-size: 1.1rem; text-decoration: none;">
+        🚦 Managed gRPC Bootstrap
+    </a>
+    <p style="margin-top: 0.5rem; margin-bottom: 0;">
+        Runtime entrypoint that starts the gRPC executor with persisted prompt-hook resolution enabled.
+    </p>
+</div>
+
 ## Core Libraries
 
 <div style="margin: 1rem 0; padding: 1rem; background-color: var(--quote-bg); border-left: 4px solid var(--sidebar-fg);">
@@ -52,6 +61,10 @@ The comprehensive API reference for the ROAM framework.
         Stored procedures and logic extensions for the Dolt database.
     </p>
 </div>
+
+## Human Guides
+
+- For prompt-hook configuration, runtime headers, managed gRPC startup, and audit boundaries, see [Prompt Hooks](./architecture/prompt-hooks.md).
 
 ## Protobuf Definitions
 

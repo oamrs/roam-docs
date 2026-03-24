@@ -5,6 +5,7 @@ Welcome to the ROAM (Real-time Object Agent Mapping) Framework documentation.
 ROAM is a distributed, modular system for semantic object mapping and agent coordination. This documentation covers:
 
 - **Architecture** - System design, component relationships, and data flow
+- **Prompt Hooks** - Prompt template selection, persistence, and audit behavior at runtime
 - **Contributing** - Workflow for contributing to roam-public, PR process, and community guidelines
 - **SDK Guides** - Language-specific bindings for Python and .NET
 
@@ -25,5 +26,6 @@ ROAM integrates into your infrastructure in two distinct ways:
 ## Getting Started
 
 1. Start with [Architecture Overview](./architecture/overview.md)
-2. Read [Contribution Workflow](./contributing/workflow.md)
-3. Choose your SDK: [Python](./sdk/python.md) or [.NET](./sdk/dotnet.md)
+2. Read [Prompt Hooks](./architecture/prompt-hooks.md) if you need prompt selection, admin APIs, or runtime hook metadata
+3. Read [Contribution Workflow](./contributing/workflow.md)
+4. Choose your SDK: [Python](./sdk/python.md) or [.NET](./sdk/dotnet.md)

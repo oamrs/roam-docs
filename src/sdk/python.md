@@ -41,6 +41,30 @@ server = GrpcServer()
 server.run()
 ```
 
+## Runtime Prompt Hooks
+
+ROAM runtime calls can carry prompt-hook selection metadata so the executor can resolve a persisted prompt template before validation or execution.
+
+The key runtime headers are:
+
+- `x-roam-prompt-hook-id` to force a specific hook by id
+- `x-roam-prompt-selector-key` to select hooks by a stable business key
+- `x-roam-tool-name`, `x-roam-tool-intent`, `x-roam-user-id`, `x-roam-organization-id`, `x-roam-domain-tags`, and `x-roam-table-names` to provide matching context
+
+The executor emits resolved hook identity into normal query events, but the rendered prompt itself is reserved for the dedicated audit event.
+
+If you need a local runtime that resolves hooks from backend persistence instead of an in-memory/static resolver, start the managed gRPC binary:
+
+```bash
+make grpc-start
+```
+
+That target runs the backend-owned `roam-managed-grpc` process, which reads:
+
+- `ROAM_GRPC_ADDR` for the bind address
+- `ROAM_DB_PATH` for the query database path used by the executor
+- `ROAM_ENV` for the backend config profile used to connect to the config database
+
 ## Contributing
 
 ### For Rust Core Changes
