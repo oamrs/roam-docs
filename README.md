@@ -49,6 +49,8 @@ The shared workflow supports both release styles:
 - `public-v*` publishes only the public subtrees that changed since the previous `public-v*` tag
 - `roam-docs-v*` publishes only `services/roam-docs`, and skips cleanly if docs have not changed since the previous docs release tag
 
+Any tracked content change inside `services/roam-docs` is enough to trigger the next docs-only release publish.
+
 The workflow uses `main` as the source of truth for subtree publication, so the docs changes you want published must already be merged there before the tag is created.
 
 For authentication, the preferred setup is a single organization-level Actions secret named `SUBTREE_PUSH_TOKEN` owned by a machine user or GitHub App that has write access only to the public subtree target repositories. The workflow still supports `SUBTREE_SSH_KEY` as a fallback for older deployments.
