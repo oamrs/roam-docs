@@ -47,7 +47,7 @@ This keeps public docs publication tied to an explicit docs release instead of e
 The shared workflow supports both release styles:
 
 - `public-v*` publishes only the public subtrees that changed since the previous `public-v*` tag
-- `roam-docs-v*` publishes only `services/roam-docs`, and skips cleanly if docs have not changed since the previous docs release tag
+- `roam-docs-v*` always publishes `services/roam-docs`
 
 Any tracked content change inside `services/roam-docs` is enough to trigger the next docs-only release publish.
 
