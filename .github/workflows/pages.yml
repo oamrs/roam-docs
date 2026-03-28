@@ -28,6 +28,9 @@ jobs:
       - name: Install mdBook toolchain
         run: cargo install --locked mdbook mdbook-mermaid
 
+      - name: Install Mermaid assets
+        run: mdbook-mermaid install .
+
       - name: Build site
         run: mdbook build
 
