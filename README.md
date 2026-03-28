@@ -60,6 +60,6 @@ After the subtree is pushed, GitHub Pages should be enabled in the public `oamrs
 1. Open `Settings -> Pages` for the `oamrs/roam-docs` repository.
 2. Set `Source` to `GitHub Actions`.
 3. Leave `Custom domain` empty unless you plan to serve docs from your own DNS name.
-4. Add a Pages workflow in the public `roam-docs` repository to publish the checked-in `book/` directory.
+4. The subtree already includes `.github/workflows/pages.yml`, which publishes the checked-in `book/` directory when the public repo updates.
 
 Once that is configured, a `roam-docs-v*` release tag in the monorepo will push the latest docs subtree from `main` to `oamrs/roam-docs`, and the public repo can publish the updated site.
