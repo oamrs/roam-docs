@@ -6,7 +6,7 @@
 
 - [Overview](./architecture/overview.md)
 - [Middleware & Integration](./architecture/middleware.md)
-- [Prompt Hooks](./architecture/prompt-hooks.md)
+- [Runtime Context](./architecture/runtime-context.md)
 - [Identity & RBAC](./architecture/identity.md)
 
 # Contributing

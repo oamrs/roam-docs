@@ -1,6 +1,12 @@
 # Python SDK Guide
 
-The `roam-python` package is the Python binding for the ROAM framework's Rust core.
+Use the `roam-python` package when you want to integrate ROAM into Python applications, automation workflows, and service-side tooling without giving up a script-friendly developer experience.
+
+## Why Choose The Python SDK
+
+- Build Python services and internal tools that need direct access to ROAM capabilities.
+- Add ROAM-backed workflow automation to notebooks, jobs, and lightweight application code.
+- Move quickly with a familiar Python surface while staying aligned with the public ROAM contract.
 
 ## Installation
 
@@ -8,24 +14,13 @@ The `roam-python` package is the Python binding for the ROAM framework's Rust co
 pip install roam-python
 ```
 
-## Architecture
+## What You Get
 
-`roam-python` contains:
+The Python SDK gives you:
 
-1. **Rust Core (Read-only)** — Exported from roam-public via git subtree
-   - `mirror/` — Reflection system
-   - `interceptor/` — Lifecycle hooks
-   - `executor/` — gRPC server and coordination
-
-2. **PyO3 Bindings** — Python wrappers around Rust code
-   - Low-overhead C FFI integration
-   - Pythonic API surface
-   - Type hints for IDE support
-
-3. **Python Utilities** — Pure Python helpers
-   - Configuration management
-   - Logging and tracing
-   - Example patterns
+1. **A Python-first client surface** for integrating ROAM into application and automation code.
+2. **Typed bindings over the public runtime model** so Python code stays aligned with the supported ROAM contract.
+3. **Utility helpers and examples** that make it easier to adopt ROAM in real product and workflow scenarios.
 
 ## Quick Start
 
@@ -41,35 +36,33 @@ server = GrpcServer()
 server.run()
 ```
 
-## Runtime Prompt Hooks
+This is the fastest path when you want to stand up a Python-based integration, validate connectivity, and start building application logic around ROAM.
 
-ROAM runtime calls can carry prompt-hook selection metadata so the executor can resolve a persisted prompt template before validation or execution.
+## Runtime Augmentation
+
+ROAM runtime calls can carry runtime-augmentation selection metadata so your application can attach stable request context before validation or execution.
+
+Use the public runtime headers when you need ROAM behavior to reflect product context such as the calling tool, organization, or domain.
 
 The key runtime headers are:
 
-- `x-roam-prompt-hook-id` to force a specific hook by id
-- `x-roam-prompt-selector-key` to select hooks by a stable business key
+- `x-roam-runtime-augmentation-id` to reference a specific augmentation identifier
+- `x-roam-runtime-augmentation-key` to reference a stable augmentation key
 - `x-roam-tool-name`, `x-roam-tool-intent`, `x-roam-user-id`, `x-roam-organization-id`, `x-roam-domain-tags`, and `x-roam-table-names` to provide matching context
 
-The executor emits resolved hook identity into normal query events, but the rendered prompt itself is reserved for the dedicated audit event.
+ROAM emits resolved augmentation identity into normal query events, while sensitive rendered content remains reserved for dedicated audit handling.
 
-If you need a local runtime that resolves hooks from backend persistence instead of an in-memory/static resolver, start the managed gRPC binary:
+## Suggested Starting Points
 
-```bash
-make grpc-start
-```
-
-That target runs the backend-owned `roam-managed-grpc` process, which reads:
-
-- `ROAM_GRPC_ADDR` for the bind address
-- `ROAM_DB_PATH` for the query database path used by the executor
-- `ROAM_ENV` for the backend config profile used to connect to the config database
+- Building automation, internal tools, or orchestration logic in Python: start here.
+- Prototyping a ROAM integration before standardizing it across services: start here.
+- Passing runtime context from application code into ROAM execution paths: start with the runtime-augmentation headers above.
 
 ## Contributing
 
 ### For Rust Core Changes
 
-If you need to modify `mirror/`, `interceptor/`, or `executor/`:
+If you need to change the shared public runtime or core ROAM behavior:
 
 1. File an issue in [roam-public](https://github.com/oamrs/roam-public)
 2. Submit a PR to roam-public (see [Contribution Workflow](../contributing/workflow.md))
@@ -77,7 +70,7 @@ If you need to modify `mirror/`, `interceptor/`, or `executor/`:
 
 ### For Python Layer Improvements
 
-To add helpers, improve bindings, or enhance documentation:
+To improve the Python experience, add helpers, or expand documentation:
 
 1. Fork roam-python
 2. Create a feature branch
@@ -98,4 +91,4 @@ def load_config_from_file(path: str) -> dict:
 
 ## API Reference
 
-See the [full API docs](./api.md) for method signatures and examples.
+See the [full API docs](./api.md) for the Python package surface, method signatures, and integration details.

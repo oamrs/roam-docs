@@ -1,108 +1,82 @@
 # Testing and Release Policy
 
-## Why This Policy Exists
-
-The open-core boundary is only safe if test names match what they actually validate and if public publication happens only after the monorepo review path completes.
+ROAM treats testing and release discipline as part of the public contract. The goal is not just to ship code that works, but to ship public surfaces that are validated, predictable, and safe to adopt.
 
 ## Test Layers
 
-### Unit
+### Unit Tests
 
-- In-process only
-- No containers
-- No live RPC or HTTP calls
-- Minimal mocking only
+Unit tests should stay fast, deterministic, and in-process.
 
-If unit tests need deep mock hierarchies, treat that as a refactoring signal. The production code likely needs narrower responsibilities.
+Expectations:
 
-### Integration
+- no live RPC or HTTP calls
+- no containers
+- minimal mocking only
 
-- Real network requests only
-- Runtime must actually start
-- Containerized dependencies are expected for databases, LDAP, and peer services
-- No mocks or local-framework shortcut clients
+If a unit test needs a large mock hierarchy, treat that as a signal to simplify the production code.
 
-Examples that do not qualify as integration tests:
+### Integration Tests
 
-- Rocket local client tests
-- in-memory SQLite fallbacks used to simulate a shared service runtime
-- direct function invocation across what should be a protocol boundary
+Integration tests should validate real boundaries.
 
-### End-to-End
+Expectations:
 
-- Deploy to a non-production environment
-- Exercise the deployed system from the outside
-- Validate service wiring, secrets, networking, and rollout behavior
+- real network requests
+- a runtime that actually starts
+- real dependencies where the boundary matters
+- no shortcut local clients standing in for protocol behavior
 
-This repository does not yet have the non-production environment required to run E2E tests.
+### End-To-End Tests
 
-## CI Gates
+End-to-end tests validate a deployed environment from the outside. They are the right fit for rollout, wiring, secret, and networking concerns when that environment exists.
 
-Pull requests to `main` must pass:
+## CI Expectations
 
-1. Frontend lint, unit tests, and production build
-2. Opt-in SDK maintainability gates only where an SDK has meaningful handwritten code worth enforcing
-3. Rust quality checks, including clippy cognitive complexity enforcement
-4. Rust coverage thresholds for key library and service paths
-5. Runtime-backed test suites
-6. mdBook build
-7. Dependency audit
+Pull requests to `main` should pass the quality profile relevant to the repository being changed. That can include:
 
-Current SDK maintainability gate:
+- linting and formatting
+- unit and integration tests
+- build validation
+- documentation builds
+- coverage or maintainability gates where they add real signal
+- dependency and security checks
 
-- Python SDK maintainability gate on handwritten modules only
+SDK-specific maintainability gates are intentionally selective. They should exist where a codebase contains enough handwritten logic to justify them, not just because a language binding exists.
 
-SDK-specific maintainability gates are not mandatory per language. Do not add one just because a new SDK exists. Generated bindings, transport stubs, and transpiled artifacts should use build, smoke, and compatibility checks instead of complexity enforcement.
+## Local Validation
 
-Maintainability thresholds currently follow these bands:
-
-- Frontend: ESLint `complexity` threshold `20`
-- Rust: clippy `cognitive_complexity` threshold `10`
-- Python SDK handwritten-module radon grades:
-	- `A`: 1-5
-	- `B`: 6-10
-	- `C`: 11-20
-	- `D` and above fail the gate
-
-## Local Pre-Commit Gate
-
-This repository also ships a tracked Git pre-commit hook.
-
-Enable it locally with:
+When available, enable the repo-managed hooks locally:
 
 ```bash
 make hooks-install
 ```
 
-The hook runs the same top-level local gates expected before opening a PR:
+The local hook path is intended to catch common failures before you open a pull request. It complements CI, but does not replace it.
 
-1. `make quality-checks`
-2. `make test`
+## Release Discipline
 
-This does not replace CI, but it catches failures before the commit is created.
+Validation and publication are separate steps.
 
-## Merge and Public Publication
+The expected release path is:
 
-Public repos are not updated from an unmerged branch.
+1. merge reviewed code to `main`
+2. allow validation to complete on the merged revision
+3. create the appropriate release tag when publication is intended
 
-The release path is:
+Current public release patterns include:
 
-1. Merge reviewed code to `main`
-2. Re-run the gated validation workflow on `main`
-3. Create an explicit release tag when publication is intended
-4. Use `public-v*` tags for public subtree publication, with targets auto-detected since the previous public release tag
-5. Use `sdk-python-v*` tags for the current Python package publication
-6. Add separate language-specific SDK release workflows and tag patterns for future SDKs
+- `public-v*` for public subtree publication
+- `sdk-python-v*` for Python SDK publication
+- `sdk-<language>-v*` as the general form for future SDK release workflows
 
-Recommended SDK release tag taxonomy:
+## Why This Separation Exists
 
-- `sdk-python-v*`
-- `sdk-typescript-v*`
-- `sdk-rust-v*`
-- `sdk-go-v*`
+Separating merge validation from publication keeps the public ROAM surface more predictable for adopters.
 
-Use the general form `sdk-<language>-v*` when adding new SDK release workflows.
+It ensures that:
 
-The public subtree release workflow also supports manual dispatch with explicit subtree prefixes when a release should target only a selected subset.
-
-This keeps the private monorepo as the enforcement point for quality, security, and release discipline.
+- every published artifact passed review first
+- release timing is deliberate rather than accidental
+- public packages and docs stay aligned with validated source
+- teams can reason about adoption risk more clearly

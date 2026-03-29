@@ -1,15 +1,17 @@
 # API Reference
 
-The comprehensive API reference for the ROAM framework.
+Use this page to choose the fastest way to integrate ROAM into your product. Whether you are embedding ROAM into an application, automating workflows, or standardizing service-to-service communication, the references below point to the public surfaces intended for real adoption.
 
 ## Client SDKs
+
+Choose the SDK that best matches your application stack.
 
 <div style="margin: 1rem 0; padding: 1rem; background-color: var(--quote-bg); border-left: 4px solid var(--links);">
     <a href="api/python/index.html" style="font-weight: bold; font-size: 1.1rem; text-decoration: none;">
         🐍 Python SDK
     </a>
     <p style="margin-top: 0.5rem; margin-bottom: 0;">
-        Python bindings for Agent and Mirror overrides.
+        Build Python applications and automation flows that integrate ROAM with a lightweight, script-friendly client surface.
     </p>
 </div>
 
@@ -18,7 +20,7 @@ The comprehensive API reference for the ROAM framework.
         🔷 .NET SDK
     </a>
     <p style="margin-top: 0.5rem; margin-bottom: 0;">
-        C# Client SDK for Agents.
+        Integrate ROAM into .NET services and enterprise applications with a familiar typed client experience.
     </p>
 </div>
 
@@ -27,44 +29,13 @@ The comprehensive API reference for the ROAM framework.
         📦 OAM Client SDK (Rust)
     </a>
     <p style="margin-top: 0.5rem; margin-bottom: 0;">
-        The public crate for building OAM agents and clients.
+        Use the core Rust crate when you want maximum control, native performance, or direct access to the public runtime model.
     </p>
 </div>
 
-## Backend Services
+## Shared Contract
 
-<div style="margin: 1rem 0; padding: 1rem; background-color: var(--quote-bg); border-left: 4px solid var(--sidebar-fg);">
-    <a href="api/rust/roam_backend/index.html" style="font-weight: bold; font-size: 1.1rem; text-decoration: none;">
-        ⚙️ Roam Backend
-    </a>
-    <p style="margin-top: 0.5rem; margin-bottom: 0;">
-        Internal server API, database models, and controllers.
-    </p>
-</div>
-
-<div style="margin: 1rem 0; padding: 1rem; background-color: var(--quote-bg); border-left: 4px solid var(--sidebar-fg);">
-    <a href="api/rust/roam_managed_grpc/index.html" style="font-weight: bold; font-size: 1.1rem; text-decoration: none;">
-        🚦 Managed gRPC Bootstrap
-    </a>
-    <p style="margin-top: 0.5rem; margin-bottom: 0;">
-        Runtime entrypoint that starts the gRPC executor with persisted prompt-hook resolution enabled.
-    </p>
-</div>
-
-## Core Libraries
-
-<div style="margin: 1rem 0; padding: 1rem; background-color: var(--quote-bg); border-left: 4px solid var(--sidebar-fg);">
-    <a href="api/rust/roam_procedures/index.html" style="font-weight: bold; font-size: 1.1rem; text-decoration: none;">
-        📜 Roam Procedures
-    </a>
-    <p style="margin-top: 0.5rem; margin-bottom: 0;">
-        Stored procedures and logic extensions for the Dolt database.
-    </p>
-</div>
-
-## Human Guides
-
-- For prompt-hook configuration, runtime headers, managed gRPC startup, and audit boundaries, see [Prompt Hooks](./architecture/prompt-hooks.md).
+When you need a language-neutral integration surface, start with the protocol definitions.
 
 ## Protobuf Definitions
 
@@ -73,6 +44,13 @@ The comprehensive API reference for the ROAM framework.
         🔌 Roam Proto
     </a>
     <p style="margin-top: 0.5rem; margin-bottom: 0;">
-        Generated Rust types from gRPC Protocol Buffer definitions.
+        Review the public gRPC contract, message shapes, and service definitions that keep multi-language integrations aligned.
     </p>
 </div>
+
+## Suggested Starting Points
+
+- Building application logic in Python: start with the Python SDK.
+- Shipping a service or platform integration on .NET: start with the .NET SDK.
+- Building custom runtimes or native integrations: start with the Rust client crate.
+- Aligning multiple clients or generating your own bindings: start with the protobuf definitions.

@@ -1,43 +1,55 @@
-# Enterprise Identity & BYOI
+# Identity And BYOI
 
-Roam implements a **"Bring Your Own Identity" (BYOI)** philosophy. Rather than forcing enterprises to rebuild their permission structures within Roam, the system mirrors existing identity providers (IdPs) to map tenants, roles, and agent capabilities.
+ROAM follows a Bring Your Own Identity approach so teams can integrate with the identity systems they already trust instead of recreating users, roles, and organization structure from scratch.
 
-## Unified Sync Architecture
+## What BYOI Looks Like In Practice
 
-Roam uses a pluggable sync engine to import organizational structures into separate **Dolt Branches** before merging them into the main policy database. This ensures:
-1.  **Isolation**: Sync operations happen on branches (e.g., `import/ldap/2026-01-18`), preventing corruption of the live policy.
-2.  **Auditing**: Administrators can view a diff of permissions (`dolt diff`) before applying changes.
-3.  **Safety**: Bad syncs can be discarded without impact.
+With BYOI, ROAM aligns runtime behavior with your existing identity model by mapping external identity information into the public execution context.
 
-### Supported Providers
+That usually means carrying forward:
 
-#### 1. LDAP / Active Directory
-*   **Purpose**: Strategic Hierarchy & Multi-Tenancy.
-*   **Mapping**:
-    *   `OrganizationalUnit` (OU) → **Roam Organization** (Tenant).
-    *   `Group` (memberOf) → **Roam Role**.
-    *   Hierarchy is preserved: `Grandparents` → `Parents` → `Children`.
-*   **Use Case**: Defining who belongs to which department or cost center.
+- organization or tenant boundaries
+- user and service identity
+- role or permission context
+- capability or scope information that affects execution decisions
 
-#### 2. GitHub Teams / GitLab Groups
-*   **Purpose**: Operational Teams.
-*   **Mapping**:
-    *   Teams/Groups → **Roam Organizations**.
-    *   Repo Permissions (Read/Write/Admin) → **Agent Capabilities**.
-*   **Use Case**: A "Code Review Agent" is only active for users who have `Write` access to the target repository.
+## Why This Matters
 
-#### 3. SQL Database Roles
-*   **Purpose**: Data Governance & Row-Level Security.
-*   **Mapping**:
-    *   DB Users/Roles → **Agent Data Scopes**.
-*   **Use Case**: An "SQL Analyst Agent" inherits the exact database permissions of the user invoking it, physically preventing unauthorized access to sensitive tables.
+Identity-aware execution helps teams:
 
-## Data Flow
+- keep ROAM aligned with existing access-control boundaries
+- preserve organizational context across application and service calls
+- reduce drift between product identity and runtime behavior
+- support agent and automation workflows without inventing a parallel permission system
 
-1.  **Trigger**: Scheduled cron or API call via `/sync/{provider}`.
-2.  **Branch**: System creates `import/{provider}/{timestamp}`.
-3.  **Fetch**: Connects to IdP (LDAP/API) and traverses the tree.
-4.  **Transform**: Maps external entities to the `organizations`, `users`, and `user_organizations` tables.
-5.  **Commit**: Saves changes to the Dolt branch.
-6.  **Verify**: Runs integrity checks (optional).
-7.  **Merge**: Pull Request or fast-forward merge to `main`.
+## Common Identity Sources
+
+ROAM is well suited to identity models that originate from systems such as:
+
+- enterprise directory providers
+- source-control and collaboration platforms
+- service-owned role and entitlement systems
+- data-layer roles or scope definitions
+
+The exact integration path can vary, but the goal stays the same: keep runtime decisions grounded in the identity model your organization already operates.
+
+## Identity In The Execution Path
+
+Identity becomes most useful when it arrives with the request itself. In practice, that means ROAM can use identity context to:
+
+- interpret which organization or tenant owns the request
+- understand which actor initiated the work
+- choose the right runtime augmentation or policy path
+- emit more meaningful, audit-safe runtime events
+
+## Integration Guidance
+
+The best BYOI integrations keep identity signals stable, explicit, and close to the request boundary.
+
+Start by identifying:
+
+- which system is the source of truth for identity
+- which parts of that identity must influence runtime decisions
+- which fields need to travel through the public ROAM headers or protocol surface
+
+From there, use ROAM to preserve that context consistently across clients, services, and execution paths.

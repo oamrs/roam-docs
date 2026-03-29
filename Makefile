@@ -22,16 +22,18 @@ install:
 	@echo "mdbook tooling is ready"
 
 gen-api-docs:
-	@echo "Generating Rust API Docs (Workspace)..."
-	@cd ../.. && cargo doc --workspace --no-deps
 	@echo "Generating Rust API Docs (Public SDK)..."
 	@cd ../../libraries/roam-public && cargo doc --no-deps
+	@echo "Generating Rust API Docs (Proto crate)..."
+	@cd ../../libraries/roam-proto && cargo doc --no-deps
 	@# Copy generated docs to src directory
+	@rm -rf src/api/rust
 	@mkdir -p src/api/rust
-	@# Workspace docs (Backend, Procedures)
-	@cp -r ../../target/doc/* src/api/rust/
 	@# SDK docs (OAM crate)
 	@cp -r ../../libraries/roam-public/target/doc/* src/api/rust/
+	@# Public proto docs
+	@cp -r ../../target/doc/roam_proto src/api/rust/
+	@printf 'window.ALL_CRATES = ["oam","roam_grpc_server","roam_proto"];\n//{"start":21,"fragment_lengths":[5,19,10]}\n' > src/api/rust/crates.js
 	@# Staging Python/DotNet Placeholders (Real generation requires pdoc/docfx)
 	@mkdir -p src/api/python
 	@echo "<html><body><h1>Python SDK Docs Coming Soon</h1></body></html>" > src/api/python/index.html

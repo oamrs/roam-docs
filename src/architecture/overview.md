@@ -1,124 +1,68 @@
 # Architecture Overview
 
-## System Design
+ROAM is designed as a public runtime layer that sits close to execution boundaries. It helps products and services carry identity, policy, and agent-aware context through application logic without forcing teams to redesign the rest of their stack.
 
-ROAM follows a **distributed public/private model** with a clear separation between community-facing and proprietary components.
+## Public Runtime At A Glance
 
-### Four Repository Model
+The public ROAM surface is organized around three adoption layers:
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    oamrs GitHub Organization                    │
-└─────────────────────────────────────────────────────────────────┘
-                                │
-                ┌───────────────┼───────────────┐
-                ▼               ▼               ▼
-        ┌────────────────┐  ┌──────────────┐  ┌──────────────┐
-        │ roam-public    │  │ roam-python  │  │ roam-dotnet  │
-        │   (PUBLIC)     │  │  (PUBLIC)    │  │  (PUBLIC)    │
-        │                │  │              │  │              │
-        │ mirror/        │  │ Rust bindings│  │ C# bindings  │
-        │ interceptor/   │  │ PyO3 layer   │  │ C interop    │
-        │ executor/      │  │ Utilities    │  │ Utilities    │
-        └────────┬───────┘  └──────────────┘  └──────────────┘
-                 │                ▲                   ▲
-                 │ subtree import  │ subtree export   │
-                 │                 │ (on main push)   │
-                 ▼                 │                  │
-        ┌────────────────────────────────────────────────────┐
-        │         roam (PRIVATE MONOREPO)                    │
-        │                                                    │
-        │  ┌──────────────────────────────────────────────┐  │
-        │  │  roam-public/  (imported from public repo)   │  │
-        │  │  - mirror/                                   │  │
-        │  │  - interceptor/                              │  │
-        │  │  - executor/                                 │  │
-        │  └──────────────────────────────────────────────┘  │
-        │                                                    │
-        │  ┌──────────────────────────────────────────────┐  │
-        │  │  roam-enterprise/  (PROPRIETARY - NOT EXPORTED) │
-        │  │  - billing/        (AAU telemetry)           │  │
-        │  │  - policy-engine/  (Advanced P2SQL)          │  │
-        │  │  - rbac/           (SSO, Row-level security) │  │
-        │  └──────────────────────────────────────────────┘  │
-        │                                                    │
-        │  roam-hardware/, roam-proto/, etc.                 │
-        └────────────────────────────────────────────────────┘
-```
+1. **Core runtime** for shared execution, reflection, and protocol behavior.
+2. **Language SDKs** for integrating ROAM into Python and .NET applications.
+3. **Shared protocol definitions** for teams that need language-neutral contracts or generated bindings.
 
-### Key Principles
+## Public Building Blocks
 
-1. **Public/Private Separation**
-   - `roam-public` is the source of truth for community contributions
-   - `roam` monorepo keeps proprietary `roam-enterprise` safe
-   - Polyrepos (roam-python, roam-dotnet) receive only public exports
+### Runtime Model
 
-2. **Single Source of Truth**
-   - Core logic lives in `roam-public`
-   - Monorepo imports from public via subtree
-   - SDKs receive read-only exports
+The runtime model gives ROAM a consistent way to:
 
-3. **Community-First Design**
-   - External contributors PR against `roam-public`
-   - No need to understand the monorepo
-   - Clear contribution path: issue → PR → merge → auto-export
+- interpret structured requests and tool-facing operations
+- apply identity and organization context to execution
+- attach runtime augmentation metadata before validation and execution
+- emit audit-safe events and observable outcomes
 
-## Component Details
+### SDK Layer
 
-### roam-public (Community Core)
+The Python and .NET SDKs package that runtime model into language-specific integration surfaces. They are the fastest path for teams that want to add ROAM to existing products, services, and automation workflows.
 
-**Public Rust components:**
-- `mirror/` - SeaORM entity-to-tool reflection system
-- `interceptor/` - ActiveModelBehavior hooks for lifecycle events
-- `executor/` - Tonic/gRPC server with Tokio JoinSet coordination
+### Shared Contract
 
-**Why separate?** External contributors can fork, modify, and PR without monorepo access. Security boundary is clear.
+When teams need multi-language interoperability, generated clients, or direct protocol-level integration, the shared protobuf and gRPC contract provides the stable public boundary.
 
-### roam-enterprise (Proprietary Only)
+## Where ROAM Fits In The Stack
 
-**Never exported or open-sourced:**
-- `billing/` - Advanced accounting with AAU (Active Agent Unit) telemetry
-- `policy-engine/` - Semantic P2SQL (Property-to-SQL) analysis
-- `rbac/` - Enterprise SSO and row-level security
+ROAM usually appears in one of these roles:
 
-**Why kept private?** Customer-facing features, licensing logic, and security modules.
+- **Request-path integration** where a service or API validates and enriches execution context before work continues.
+- **Runtime coordination** where a client or middleware layer passes identity, tool, and organization context into downstream execution.
+- **Event-driven integration** where ROAM participates in decisions triggered by messages, jobs, or automation pipelines.
 
-### roam-python, roam-dotnet (SDKs)
+## Adoption Paths
 
-**Contains:**
-- Exported Rust core (read-only, synced via git subtree)
-- Language-specific bindings (PyO3 for Python, C interop for .NET)
-- SDK utilities and helpers (open to contribution)
-- Examples and documentation
+### Start With An SDK
 
-**External contributors can:**
-- Improve language-specific wrappers
-- Add utilities and helpers
-- Fix SDK-layer bugs
-- Enhance documentation
+Use an SDK when you want to move quickly inside an application stack. This is the best fit for:
 
-**External contributors cannot:**
-- Modify exported Rust core (roam-public code)
-- They must file issues/PRs in roam-public for core changes
+- service teams integrating ROAM into existing APIs
+- platform teams standardizing runtime context across applications
+- automation teams building product or operations workflows
 
-## Operational Modes
+### Start With The Shared Contract
 
-ROAM supports two distinct operational modes depending on how the Agent interacts with the host environment.
+Use the protocol definitions when you want to:
 
-### 1. Active Mode (User-Driven Interception)
+- generate your own client bindings
+- align multiple services around one public contract
+- integrate from a language or platform that does not yet have a first-party SDK
 
-The End User via the UI initiates the interaction. The OAM middleware intercepts the incoming request. This interception only occurs if the **BYOI layer** determines that an Agent is authorized to act on behalf of that user's roles.
+## Operating Modes
 
-*   **Role**: Agent acts as a Shadow/Monitor.
-*   **Typical Context**: API Integration, Managed Proxy.
-*   **Flow**: `User UI -> OAM Middleware -> [Async Event to Agent] -> Application/DB`.
-*   **Trigger**: User performs an action. The request is allowed to continue without modification (asynchronously monitored), or blocked only if it violates safety policy.
+ROAM supports both user-driven and event-driven execution patterns.
 
-### 2. Passive Mode (Agent as Observer)
+### Application-Driven Mode
 
-The Agent reacts to existing system events or data streams. It sits on a message bus (like Kafka) or gRPC interceptor chain. When an event occurs, the **BYOI layer** determines if an Agent is authorized to act on the request. If unauthorized, the event continues to the handler untouched. If authorized, the Agent assists by inspecting intent or enforcing policy.
+In application-driven flows, a user or upstream service initiates the request. ROAM enriches or validates that request as it moves through an application or API boundary.
 
-*   **Role**: Agent acts as an Assistant.
-*   **Typical Context**: Kafka Streams, Desktop UI Events, Message Buses.
-*   **Flow**: `Event Source -> BYOI Check -> [Optional Agent Assistant] -> Business Logic`.
-*   **Trigger**: External event (e.g., "DraftCreated", "UserLogin") triggers the inspection pipeline.
+### Event-Driven Mode
+
+In event-driven flows, ROAM participates when a message, RPC call, or background job creates a decision point that needs shared runtime context or policy-aware behavior.
