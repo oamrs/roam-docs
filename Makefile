@@ -33,7 +33,7 @@ gen-api-docs:
 	@cp -r ../../libraries/roam-public/target/doc/* src/api/rust/
 	@# Public proto docs
 	@cp -r ../../target/doc/roam_proto src/api/rust/
-	@printf 'window.ALL_CRATES = ["oam","roam_grpc_server","roam_proto"];\n//{"start":21,"fragment_lengths":[5,19,10]}\n' > src/api/rust/crates.js
+	@python3 -c 'import json; from pathlib import Path; root = Path("src/api/rust"); crates = sorted(path.name for path in root.iterdir() if path.is_dir() and (path / "index.html").exists()); (root / "crates.js").write_text("window.ALL_CRATES = " + json.dumps(crates) + ";\\n", encoding="utf-8")'
 	@# Staging Python/DotNet Placeholders (Real generation requires pdoc/docfx)
 	@mkdir -p src/api/python
 	@echo "<html><body><h1>Python SDK Docs Coming Soon</h1></body></html>" > src/api/python/index.html
